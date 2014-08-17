@@ -8,20 +8,22 @@ using ClosedXML.Excel;
 
 namespace SelecToExcel.Models
 {
-    public class ExcelModel
+    public class ExcelModel : IOutput
     {
+        private string _excelFullPath;
+
+        public string FileFullPath
+        {
+            get { return _excelFullPath; }
+            set { _excelFullPath = value; }
+        }
+
         #region コンストラクタ
         public ExcelModel(string _fileFullPath)
         {
-            this.FileFullPath = _fileFullPath;
+            this._excelFullPath = _fileFullPath;
+            FileFullPath = _fileFullPath;
         }
-        #endregion
-
-        #region プロパティ
-        /// <summary>
-        /// Excel保存するのフルパス
-        /// </summary>
-        public string FileFullPath { get; set; }
         #endregion
 
         #region メンバ関数
@@ -32,7 +34,7 @@ namespace SelecToExcel.Models
         /// <param name="_executeDate"></param>
         /// <param name="_sql"></param>
         /// <returns></returns>
-        public bool CreateExcel(DataTable _dt, DateTime _executeDate, string _sql)
+        public bool Write(DataTable _dt, DateTime _executeDate, string _sql)
         {
             ///// Excel作成
             try

@@ -14,11 +14,12 @@ namespace SelecToExcel.Models
         #region コンストラクタ
         public ToolSettingModel()
         {
-            ConnectionStringHistory = new List<string>();
-            ExcelFullPath = string.Empty;
-            SqlString = string.Empty;
-            DbType = (Define.DatabaseType)0;
-            IsOpenExcel = false;
+            this.ConnectionStringHistory = new List<string>();
+            this.ExcelFullPath = string.Empty;
+            this.SqlString = string.Empty;
+            this.DbType = (Define.DatabaseType)0;
+            this.SqlType = Define.ExecuteSqlType.Input;
+            this.IsOpenExcel = false;
         }
         #endregion
 
@@ -102,7 +103,7 @@ namespace SelecToExcel.Models
                     DbType = (Define.DatabaseType)Enum.Parse(typeof(Define.DatabaseType), value);
                 }
                 catch
-                {}
+                { }
             }
         }
         #endregion

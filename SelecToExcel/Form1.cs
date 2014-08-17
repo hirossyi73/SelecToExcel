@@ -130,13 +130,23 @@ namespace SelecToExcel
                     return;
                 }
 
-                ///// Excel作成
+                ///// ファイル作成
                 try
                 {
-                    ExcelModel excelModel = new ExcelModel(this.textBox_excelFullPath.Text);
+                    Define.OutFileType outType = Define.GetOutFileTypeByPath(this.textBox_excelFullPath.Text);
+                    IOutput output = null;
+                    switch (outType)
+                    {
+                        case Define.OutFileType.Excel:
+                            output = new ExcelModel(this.textBox_excelFullPath.Text);
+                            break;
+                        case Define.OutFileType.Csv:
+                            output = new CsvModel(this.textBox_excelFullPath.Text);
+                            break;
+                    }
 
-                    // Excel出力成功時
-                    if (excelModel.CreateExcel(dt, executeDate, sql))
+                    // 出力成功時
+                    if (output.Write(dt, executeDate, sql))
                     {
                         if (this.checkBox_isOpenExcel.Checked)
                         {
@@ -149,7 +159,7 @@ namespace SelecToExcel
                     }
                     else
                     {
-                        windowEnabled("Excel出力に失敗しました");
+                        windowEnabled("出力に失敗しました");
                     }
                 }
                 catch (Exception ex)
@@ -257,42 +267,56 @@ namespace SelecToExcel
         {
             string excelFile = this.textBox_excelFullPath.Text;
             //OpenFileDialogクラスのインスタンスを作成
-            OpenFileDialog ofd = new OpenFileDialog();
+            SaveFileDialog sfd = new SaveFileDialog();
 
             //はじめに表示されるフォルダを指定する
             if (string.IsNullOrEmpty(excelFile))
             {
-                ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             }
             try
             {
                 if (Directory.Exists(Path.GetDirectoryName(excelFile)))
                 {
-                    ofd.InitialDirectory = Path.GetDirectoryName(excelFile);
+                    sfd.InitialDirectory = Path.GetDirectoryName(excelFile);
                 }
                 else
                 {
-                    ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                    sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
                 }
             }
             catch
             {
-                ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             }
-            ofd.Filter = "Excel2010ファイル (*.xlsx)|*.xlsx";
-            ofd.FilterIndex = 0;
-            ofd.Title = "Excelファイルの保存先";
-            ofd.RestoreDirectory = true;
-            ofd.CheckFileExists = false;
-            ofd.CheckPathExists = true;
+            sfd.Filter = getDialogFilterString();
+            sfd.FilterIndex = 0;
+            sfd.Title = "ファイルの保存先";
+            sfd.RestoreDirectory = true;
+            sfd.CheckFileExists = false;
+            sfd.CheckPathExists = true;
 
             //ダイアログを表示する
-            if (ofd.ShowDialog() == DialogResult.OK)
+            if (sfd.ShowDialog() == DialogResult.OK)
             {
                 //OKボタンがクリックされたとき
                 //選択されたファイル名を表示する
-                this.textBox_excelFullPath.Text = ofd.FileName;
+                this.textBox_excelFullPath.Text = sfd.FileName;
             }
+        }
+
+        private string getDialogFilterString()
+        {
+            StringBuilder result = new StringBuilder();
+            foreach (Define.OutFileType item in Enum.GetValues(typeof(Define.OutFileType)))
+            {
+                if (result.Length != 0) { result.Append("|"); }
+                result.Append(Define.GetOutFileTypeString(item) + "ファイル");
+                result.Append(" (*" + Define.GetOutFileTypeExt(item) + ")");
+                result.Append("|*" + Define.GetOutFileTypeExt(item));
+            }
+
+            return result.ToString();
         }
 
         private void outSqlKanri_Click(object sender, EventArgs e)

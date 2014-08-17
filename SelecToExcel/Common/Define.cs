@@ -21,7 +21,8 @@ namespace SelecToExcel.Common
         public const string BATCH_DBTYPE = "dbtype";
         public const string BATCH_CONNECTSTTRING = "constr";
         public const string BATCH_SQL = "sqlpath";
-        public const string BATCH_EXCELPATH = "excelpath";
+        public const string BATCH_OUTFILETYPE = "outtype";
+        public const string BATCH_OUTPATH = "outpath";
         public const string BATCH_LOG = "log";
         public const string BATCH_LOG_PATH = "logpath";
 
@@ -77,6 +78,11 @@ namespace SelecToExcel.Common
             /// 成功
             /// </summary>
             Success = 0
+            ,
+            /// <summary>
+            /// 指定した拡張子でない
+            /// </summary>
+            ExtentionError = 101
             ,
             /// <summary>
             /// DB 接続エラー
@@ -156,5 +162,83 @@ namespace SelecToExcel.Common
             ,
             OutFile = 1
         }
+
+        /// <summary>
+        /// 出力するファイル形式
+        /// </summary>
+        public enum OutFileType : int
+        {
+            /// <summary>
+            /// Excel
+            /// </summary>
+            Excel = 0
+            ,
+            /// <summary>
+            /// Csv 
+            /// </summary>
+            Csv = 1
+        }
+
+        /// <summary>
+        /// 出力するファイル形式の文字列
+        /// </summary>
+        /// <param name="_type"></param>
+        /// <returns></returns>
+        public static string GetOutFileTypeString(OutFileType _type)
+        {
+            switch (_type)
+            {
+                case OutFileType.Excel:
+                    return "Excel";
+                case OutFileType.Csv:
+                    return "csv";
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// 出力するファイル形式の拡張子（ドット有り）
+        /// </summary>
+        /// <param name="_type"></param>
+        /// <returns></returns>
+        public static string GetOutFileTypeExt(OutFileType _type)
+        {
+            switch (_type)
+            {
+                case OutFileType.Excel:
+                    return ".xlsx";
+                case OutFileType.Csv:
+                    return ".csv";
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// 出力するファイル形式を拡張子から取得
+        /// </summary>
+        /// <param name="_type"></param>
+        /// <returns></returns>
+        public static OutFileType GetOutFileTypeByExt(string _ext)
+        {
+            switch (_ext.Replace(".", ""))
+            {
+                case "xlsx":
+                    return OutFileType.Excel;
+                case "csv":
+                    return OutFileType.Csv;
+            }
+            return OutFileType.Excel;
+        }
+
+        /// <summary>
+        /// FileパスからOutFileTypeを取得
+        /// </summary>
+        /// <param name="_fileFullPath"></param>
+        /// <returns></returns>
+        public static OutFileType GetOutFileTypeByPath(string _fileFullPath)
+        {
+            return GetOutFileTypeByExt(Path.GetExtension(_fileFullPath));
+        }
+        
     }
 }

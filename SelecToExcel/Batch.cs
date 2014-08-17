@@ -35,10 +35,10 @@ namespace SelecToExcel
                 ///// Excel作成
                 try
                 {
-                    ExcelModel excelModel = new ExcelModel(model.ExcelFullPath);
+                    ExcelModel excelModel = new ExcelModel(model.OutFileFullPath);
 
                     // Excel出力成功時
-                    if (excelModel.CreateExcel(dt, executeDate, sql))
+                    if (excelModel.Write(dt, executeDate, sql))
                     {
                         return Define.ErrorCode.Success.GetHashCode();
                     }

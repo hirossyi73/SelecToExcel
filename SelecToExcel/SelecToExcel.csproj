@@ -54,6 +54,9 @@
     <Reference Include="ClosedXML">
       <HintPath>..\packages\ClosedXML.0.73.0\lib\net35-client\ClosedXML.dll</HintPath>
     </Reference>
+    <Reference Include="CsvHelper">
+      <HintPath>..\packages\CsvHelper.2.7.0\lib\net35-client\CsvHelper.dll</HintPath>
+    </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.0.5022.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\DocumentFormat.OpenXml.1.0\lib\DocumentFormat.OpenXml.dll</HintPath>
@@ -84,9 +87,11 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\BatchModel.cs" />
+    <Compile Include="Models\CsvModel.cs" />
     <Compile Include="Models\DBModel.cs" />
     <Compile Include="Models\ExcelModel.cs" />
     <Compile Include="Models\ExceptionModel.cs" />
+    <Compile Include="Models\Interface\IOutput.cs" />
     <Compile Include="Models\ToolSettingModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

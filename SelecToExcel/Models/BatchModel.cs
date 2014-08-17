@@ -16,7 +16,9 @@ namespace SelecToExcel.Models
             DbType = null;
             ConnectionString = null;
             SqlFullPath = null;
-            ExcelFullPath = null;
+            OutFileFullPath = null;
+
+            OutFileType = Define.OutFileType.Excel;
             IsLog = false;
             LogFullPath = null;
         }
@@ -49,8 +51,9 @@ namespace SelecToExcel.Models
         public string SqlFullPath { get; set; }
 
         [RequiredAttribute]
-        public string ExcelFullPath { get; set; }
+        public string OutFileFullPath { get; set; }
 
+        public Define.OutFileType? OutFileType { get; set; }
         public bool IsLog { get; set; }
         public string LogFullPath { get; set; }
 
@@ -78,11 +81,14 @@ namespace SelecToExcel.Models
                     case Define.BATCH_DBTYPE:
                         this.DbTypeNo = Common.Bis.ParseInt(val);
                         break;
-                    case Define.BATCH_EXCELPATH:
-                        this.ExcelFullPath = val;
+                    case Define.BATCH_OUTPATH:
+                        this.OutFileFullPath = val;
                         break;
                     case Define.BATCH_SQL:
                         this.SqlFullPath = val;
+                        break;
+                    case Define.BATCH_OUTFILETYPE:
+                        this.OutFileType = (Define.OutFileType)Common.Bis.ParseInt(val);
                         break;
                     case Define.BATCH_LOG:
                         break;
