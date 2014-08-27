@@ -118,35 +118,13 @@ namespace SelecToExcel
                     Directory.CreateDirectory(Path.GetDirectoryName(this.textBox_excelFullPath.Text));
                 }
 
-                ///// DBよりデータ取得
-                DBModel dbModel = new DBModel(app.DbType, connectionString);
-                DataTable dt = dbModel.GetDBTable(sql);
-                DateTime executeDate = DateTime.UtcNow.AddHours(9);
-
-                // 1件も一致しなかった場合はアラートで終了
-                if (dt.Rows.Count == 0)
-                {
-                    windowEnabled("結果が１件もありませんでした");
-                    return;
-                }
-
-                ///// ファイル作成
+                ///// DBよりデータ出力
+                Define.ErrorCode errorCode = Define.ErrorCode.Success;
                 try
                 {
-                    Define.OutFileType outType = Define.GetOutFileTypeByPath(this.textBox_excelFullPath.Text);
-                    IOutput output = null;
-                    switch (outType)
-                    {
-                        case Define.OutFileType.Excel:
-                            output = new ExcelModel(this.textBox_excelFullPath.Text);
-                            break;
-                        case Define.OutFileType.Csv:
-                            output = new CsvModel(this.textBox_excelFullPath.Text);
-                            break;
-                    }
-
+                    errorCode = Bis.ExecuteDbToFile(app.DbType, connectionString, sql, this.textBox_excelFullPath.Text);
                     // 出力成功時
-                    if (output.Write(dt, executeDate, sql))
+                    if (errorCode == Define.ErrorCode.Success)
                     {
                         if (this.checkBox_isOpenExcel.Checked)
                         {
@@ -154,19 +132,25 @@ namespace SelecToExcel
                         }
                         else
                         {
-                            windowEnabled("出力が完了しました");
+                            windowEnabled(Define.ErrorMessage(errorCode));
                         }
                     }
-                    else
-                    {
-                        windowEnabled("出力に失敗しました");
-                    }
+                }
+                catch (STEException ex)
+                {
+                    windowEnabled(ex.ErrorMassage + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                    return;
                 }
                 catch (Exception ex)
                 {
                     windowEnabled(ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
+            }
+            catch (STEException ex)
+            {
+                windowEnabled(ex.ErrorMassage + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                return;
             }
             catch (Exception ex)
             {

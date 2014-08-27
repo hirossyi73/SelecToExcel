@@ -22,7 +22,9 @@ namespace SelecToExcel
             }
             else
             {
-                return Batch.ExecuteBatch(args);
+                int result = Batch.ExecuteBatch(args);
+                Console.WriteLine(Common.Define.ErrorMessage((Common.Define.ErrorCode)result));
+                return result;
             }
         }
     }

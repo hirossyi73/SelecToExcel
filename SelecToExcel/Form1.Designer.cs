@@ -96,6 +96,7 @@
             this.ToolStripMenuItem_option.Name = "ToolStripMenuItem_option";
             this.ToolStripMenuItem_option.Size = new System.Drawing.Size(62, 20);
             this.ToolStripMenuItem_option.Text = "オプション";
+            this.ToolStripMenuItem_option.Visible = false;
             // 
             // ToolStripMenuItem_openHelp
             // 

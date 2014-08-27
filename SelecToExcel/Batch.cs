@@ -21,33 +21,23 @@ namespace SelecToExcel
                 model.SetParam(args);
                 if (!model.IsValidate())
                 {
-                    return -1; // todo ちゃんと
+                    return Define.ErrorCode.HissuFusokuError.GetHashCode();
                 }
 
                 string sql = Bis.GetFileText(model.SqlFullPath);
+                string connstr = Bis.GetFileText(model.ConnectionString);
 
-                ///// DBよりデータ取得
-                DBModel dbModel = new DBModel((Define.DatabaseType)model.DbType, model.ConnectionString);
-                DataTable dt = dbModel.GetDBTable(sql);
-                DateTime executeDate = DateTime.UtcNow.AddHours(9);
-
-                
                 ///// Excel作成
                 try
                 {
-                    ExcelModel excelModel = new ExcelModel(model.OutFileFullPath);
-
-                    // Excel出力成功時
-                    if (excelModel.Write(dt, executeDate, sql))
-                    {
-                        return Define.ErrorCode.Success.GetHashCode();
-                    }
-                    else
-                    {
-                        return Define.ErrorCode.ExcelSaveError.GetHashCode();
-                    }
+                    Define.ErrorCode errorCode = Bis.ExecuteDbToFile((Define.DatabaseType)model.DbType, connstr, sql, model.OutFileFullPath);
+                    return errorCode.GetHashCode();
                 }
-                catch (Exception ex)
+                catch (STEException stex)
+                {
+                    return stex.ErrorNo;
+                }
+                catch (Exception)
                 {
                     return Define.ErrorCode.ExcelUnExpectedError.GetHashCode();
                 }

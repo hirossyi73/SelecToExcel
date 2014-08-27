@@ -5,11 +5,75 @@ using System.Text;
 
 using SelecToExcel.Models;
 using System.IO;
+using System.Data;  
 
 namespace SelecToExcel.Common
 {
     public static class Bis
     {
+        /// <summary>
+        /// DBよりExcel・CSVに出力
+        /// </summary>
+        /// <param name="_dbType"></param>
+        /// <param name="_connectString"></param>
+        /// <param name="_sql"></param>
+        /// <param name="_outFileFullPath"></param>
+        /// <returns></returns>
+        public static Define.ErrorCode ExecuteDbToFile(Define.DatabaseType _dbType, string _connectString, string _sql, string _outFileFullPath)
+        {
+            Define.OutFileType outType = Define.OutFileType.Excel;
+            // Excel出力用のフォルダ作成
+            if (!Directory.Exists(Path.GetDirectoryName(_outFileFullPath)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(_outFileFullPath));
+            }
+
+            ///// DBよりデータ取得
+            DBModel dbModel = new DBModel(_dbType, _connectString);
+            DataTable dt = dbModel.GetDBTable(_sql);
+            DateTime executeDate = DateTime.UtcNow.AddHours(9);
+
+            // 1件も一致しなかった場合は終了
+            if (dt.Rows.Count == 0)
+            {
+                return Define.ErrorCode.DBCountZeroError;
+            }
+
+            ///// ファイル作成
+            try
+            {
+                outType = Define.GetOutFileTypeByPath(_outFileFullPath);
+                IOutput output = null;
+                switch (outType)
+                {
+                    case Define.OutFileType.Excel:
+                        output = new ExcelModel(_outFileFullPath);
+                        break;
+                    case Define.OutFileType.Csv:
+                        output = new CsvModel(_outFileFullPath);
+                        break;
+                }
+
+                // 出力成功時
+                if (output.Write(dt, executeDate, _sql))
+                {
+                    return Define.ErrorCode.Success;
+                }
+                else
+                {
+                    return Define.ErrorCode.ExcelOutputDataError;
+                }
+            }
+            catch (STEException stex)
+            {
+                return stex.ErrorCode;
+            }
+            catch
+            {
+                return Define.ErrorCode.ExcelUnExpectedError;
+            }
+        }
+
         /// <summary>
         /// int?をintに置き換え
         /// 変換に失敗すれば、errValを返却

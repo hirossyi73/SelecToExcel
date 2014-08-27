@@ -19,7 +19,7 @@ namespace SelecToExcel.Common
         public const string BATCH_ARGS_SEPARATE_STRING = ":=";
 
         public const string BATCH_DBTYPE = "dbtype";
-        public const string BATCH_CONNECTSTTRING = "constr";
+        public const string BATCH_CONNECTPATH = "conpath";
         public const string BATCH_SQL = "sqlpath";
         public const string BATCH_OUTFILETYPE = "outtype";
         public const string BATCH_OUTPATH = "outpath";
@@ -33,8 +33,9 @@ namespace SelecToExcel.Common
         {
             get
             {
-                string ApplicationDataDirPath = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SelecToExcel");
-                return Path.Combine(ApplicationDataDirPath, "app.xml");
+                return Path.Combine(ToolDirFullPath, "app.xml");
+                //string ApplicationDataDirPath = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SelecToExcel");
+                //return Path.Combine(ApplicationDataDirPath, "app.xml");
             }
         }
 
@@ -72,6 +73,9 @@ namespace SelecToExcel.Common
             }
         }
 
+        /// <summary>
+        /// エラーコード
+        /// </summary>
         public enum ErrorCode : int
         {
             /// <summary>
@@ -85,6 +89,11 @@ namespace SelecToExcel.Common
             ExtentionError = 101
             ,
             /// <summary>
+            /// 必須項目不足
+            /// </summary>
+            HissuFusokuError = 301
+            ,
+            /// <summary>
             /// DB 接続エラー
             /// </summary>
             DBConnectError = 1001
@@ -93,6 +102,11 @@ namespace SelecToExcel.Common
             /// DB SQL実行エラー
             /// </summary>
             DBExecuteError = 1002
+            ,
+            /// <summary>
+            /// DB 実行結果が0件
+            /// </summary>
+            DBCountZeroError = 1003
             ,
             /// <summary>
             /// DB 予期せぬエラー
@@ -115,9 +129,56 @@ namespace SelecToExcel.Common
             ExcelUnExpectedError = 2999
             ,
             /// <summary>
+            /// Csv 値出力エラー
+            /// </summary>
+            CsvOutputDataError = 3001
+            ,
+            /// <summary>
+            /// Csv 保存エラー
+            /// </summary>
+            CsvSaveError = 3002
+            ,
+            /// <summary>
+            /// Csv 予期せぬエラー
+            /// </summary>
+            CsvUnExpectedError = 3999
+            ,
+            /// <summary>
             /// 予期せぬエラー
             /// </summary>
             UnExpectedError = 9999
+        }
+
+        /// <summary>
+        /// エラーメッセージ
+        /// </summary>
+        /// <param name="_code">エラーコード</param>
+        /// <returns></returns>
+        public static string ErrorMessage(ErrorCode _code)
+        {
+            switch (_code)
+            {
+                case ErrorCode.Success:
+                    return "正常に終了しました。";
+                case ErrorCode.ExtentionError:
+                    return "指定の拡張子は対応しておりません。";
+                case ErrorCode.DBConnectError:
+                    return "データベースへの接続に失敗しました。\r\nデータベースの状態、接続文字列を確認してください。";
+                case ErrorCode.DBExecuteError:
+                    return "SQLの実行に失敗しました。SQLを確認してください。";
+                case ErrorCode.DBUnExpectedError:
+                    return "データベースで予期せぬエラーが発生しました。";
+                case ErrorCode.ExcelOutputDataError:
+                    return "Excel出力に失敗しました。";
+                case ErrorCode.ExcelSaveError:
+                    return "Excelの保存に失敗しました。保存先を確認してください。";
+                case ErrorCode.ExcelUnExpectedError:
+                    return "Excel出力で予期せぬエラーが発生しました。";
+                case ErrorCode.UnExpectedError:
+                    return "予期せぬエラーが発生しました。";
+            }
+
+            return string.Empty;
         }
 
         public enum DatabaseType : int

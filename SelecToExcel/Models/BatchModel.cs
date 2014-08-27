@@ -75,7 +75,7 @@ namespace SelecToExcel.Models
 
                 switch (paramArray[0])
                 {
-                    case Define.BATCH_CONNECTSTTRING:
+                    case Define.BATCH_CONNECTPATH:
                         this.ConnectionString = val;
                         break;
                     case Define.BATCH_DBTYPE:

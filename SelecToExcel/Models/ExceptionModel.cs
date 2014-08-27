@@ -43,6 +43,17 @@ namespace SelecToExcel.Models
             }
         }
 
+        /// <summary>
+        /// エラーメッセージ
+        /// </summary>
+        public string ErrorMassage
+        {
+            get
+            {
+                return Define.ErrorMessage(this.ErrorCode);
+            }
+        }
+
         public Exception Ex { get; set; }
         #endregion
 
