@@ -7,7 +7,7 @@ using System.IO;
 using System.Data;
 using CsvHelper;
 
-/// 引用：http://www.cprogramdevelop.com/283104/
+/// 引用：http://dobon.net/vb/dotnet/file/writecsvfile.html
 /// 
 namespace SelecToExcel.Models
 {
@@ -20,135 +20,114 @@ namespace SelecToExcel.Models
             this._csvFile = csvFile;
         }
 
-        #region ICSVWriterReader Members
-
         public string FileFullPath
         {
             get { return _csvFile; }
             set { _csvFile = value; }
         }
 
-        public DataTable Read()
+        /// <summary>
+        /// DataTableの内容をCSVファイルに保存する
+        /// </summary>
+        /// <param name="dt">CSVに変換するDataTable</param>
+        /// <param name="csvPath">保存先のCSVファイルのパス</param>
+        /// <param name="writeHeader">ヘッダを書き込む時はtrue。</param>
+        public bool Write(
+            DataTable dt, DateTime _executeDate, string _sql)
         {
-            FileInfo fi = new FileInfo(this._csvFile);
-            if (fi == null || !fi.Exists) return null;
+            int colCount = dt.Columns.Count;
+            int lastColIndex = colCount - 1;
 
-            StreamReader reader = new StreamReader(this._csvFile);
-
-            string line = string.Empty; int lineNumber = 0;
-
-            DataTable dt = new DataTable();
-
-            while ((line = reader.ReadLine()) != null)
+            try
             {
-                if (lineNumber == 0)
-                {//Create Tole  
-                    dt = CreateDataTable(line);
-                    if (dt.Columns.Count == 0) return null;
-                }
-                else
+                //書き込むファイルを開く
+                using (StreamWriter sr = new StreamWriter(FileFullPath, false, Encoding.UTF8))
                 {
-                    bool isSuccess = CreateDataRow(ref dt, line);
-                    if (!isSuccess) return null;
+                    //ヘッダを書き込む
+                    for (int i = 0; i < colCount; i++)
+                    {
+                        //ヘッダの取得
+                        string field = dt.Columns[i].Caption;
+                        //"で囲む
+                        field = EncloseDoubleQuotesIfNeed(field);
+                        //フィールドを書き込む
+                        sr.Write(field);
+                        //カンマを書き込む
+                        if (lastColIndex > i)
+                        {
+                            sr.Write(',');
+                        }
+                    }
+                    //改行する
+                    sr.Write("\r\n");
+
+                    //レコードを書き込む
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        for (int i = 0; i < colCount; i++)
+                        {
+                            //フィールドの取得
+                            string field = row[i].ToString();
+                            //"で囲む
+                            field = EncloseDoubleQuotesIfNeed(field);
+                            //フィールドを書き込む
+                            sr.Write(field);
+                            //カンマを書き込む
+                            if (lastColIndex > i)
+                            {
+                                sr.Write(',');
+                            }
+                        }
+                        //改行する
+                        sr.Write("\r\n");
+                    }
                 }
-                lineNumber++;
             }
-
-            return dt;
-        }
-
-        public bool Write(DataTable dt, DateTime _executeDate, string _sql)
-        {
-            FileInfo fi = new FileInfo(this._csvFile);
-            if (fi == null || !fi.Exists)
+            catch(Exception ex) // TODO:ちゃんと
             {
-                File.Create(this._csvFile).Close();
-            }
-
-            if (dt == null || dt.Columns.Count == 0 || dt.Rows.Count == 0) return false;
-
-            using (StreamWriter writer = new StreamWriter(this._csvFile))
-            {
-                //writer.AutoFlush = true;  
-
-                string line = string.Empty;
-
-                line = CreateTitle(dt);
-                writer.WriteLine(line);
-
-                foreach (DataRow dr in dt.Rows)
-                {
-                    line = CretreLine(dr);
-                    writer.WriteLine(line);
-                }
-
-                writer.Flush();
+                throw new STEException(Common.Define.ErrorCode.CsvOutputDataError, ex);
             }
             return true;
         }
 
-
-        private DataTable CreateDataTable(string line)
+        /// <summary>
+        /// 必要ならば、文字列をダブルクォートで囲む
+        /// </summary>
+        private string EncloseDoubleQuotesIfNeed(string field)
         {
-            DataTable dt = new DataTable();
-            foreach (string field in
-                line.Split(FormatSplit, StringSplitOptions.None))
+            if (NeedEncloseDoubleQuotes(field))
             {
-                dt.Columns.Add(field);
+                return EncloseDoubleQuotes(field);
             }
-            return dt;
+            return field;
         }
 
-        private bool CreateDataRow(ref DataTable dt, string line)
+        /// <summary>
+        /// 文字列をダブルクォートで囲む
+        /// </summary>
+        private string EncloseDoubleQuotes(string field)
         {
-            DataRow dr = dt.NewRow();
-
-            string[] fileds = line.Split(FormatSplit, StringSplitOptions.None);
-
-            if (fileds.Length == 0 || fileds.Length != dt.Columns.Count) return false;
-
-            for (int i = 0; i < fileds.Length; i++)
+            if (field.IndexOf('"') > -1)
             {
-                dr[i] = fileds[i];
+                //"を""とする
+                field = field.Replace("\"", "\"\"");
             }
-
-            dt.Rows.Add(dr);
-            return true;
+            return "\"" + field + "\"";
         }
 
-        private char[] FormatSplit
+        /// <summary>
+        /// 文字列をダブルクォートで囲む必要があるか調べる
+        /// </summary>
+        private bool NeedEncloseDoubleQuotes(string field)
         {
-            get { return new char[] { ',' }; }
+            return field.IndexOf('"') > -1 ||
+                field.IndexOf(',') > -1 ||
+                field.IndexOf('\r') > -1 ||
+                field.IndexOf('\n') > -1 ||
+                field.StartsWith(" ") ||
+                field.StartsWith("\t") ||
+                field.EndsWith(" ") ||
+                field.EndsWith("\t");
         }
-
-        private string CreateTitle(DataTable dt)
-        {
-            string line = string.Empty;
-
-            for (int i = 0; i < dt.Columns.Count; i++)
-            {
-                line += string.Format("{0}{1}", dt.Columns[i].ColumnName, FormatSplit[0].ToString());
-            }
-
-            line.TrimEnd(FormatSplit[0]);
-
-            return line;
-        }
-
-        private string CretreLine(DataRow dr)
-        {
-            string line = string.Empty;
-
-            for (int i = 0; i < dr.ItemArray.Length; i++)
-            {
-                line += string.Format("{0}{1}", dr[i], FormatSplit[0].ToString());
-            }
-
-            line.TrimEnd(FormatSplit[0]);
-
-            return line;
-        }
-
-        #endregion
     }
 }

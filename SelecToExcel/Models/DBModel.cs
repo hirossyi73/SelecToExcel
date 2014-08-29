@@ -21,7 +21,7 @@ namespace SelecToExcel.Models
     {
         public DBModel(Define.DatabaseType _dbType, string _connectionString)
         {
-            this.DbType = Define.DatabaseType.SqlServer;
+            this.DbType =_dbType;
             this.ConnectionString = _connectionString;
         }
 
