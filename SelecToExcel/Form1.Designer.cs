@@ -56,6 +56,8 @@
             this.textBox_excelFullPath = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.button_execute = new System.Windows.Forms.Button();
+            this.ToolStripMenuItem_outFileReload = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             this.panel_.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -92,17 +94,18 @@
             // ToolStripMenuItem_option
             // 
             this.ToolStripMenuItem_option.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStripMenuItem_outFileReload,
+            this.toolStripMenuItem1,
             this.ToolStripMenuItem_openHelp});
             this.ToolStripMenuItem_option.Name = "ToolStripMenuItem_option";
             this.ToolStripMenuItem_option.Size = new System.Drawing.Size(62, 20);
             this.ToolStripMenuItem_option.Text = "オプション";
-            this.ToolStripMenuItem_option.Visible = false;
             // 
             // ToolStripMenuItem_openHelp
             // 
             this.ToolStripMenuItem_openHelp.Name = "ToolStripMenuItem_openHelp";
-            this.ToolStripMenuItem_openHelp.Size = new System.Drawing.Size(205, 22);
-            this.ToolStripMenuItem_openHelp.Text = "ヘルプを開く（外部サイト）";
+            this.ToolStripMenuItem_openHelp.Size = new System.Drawing.Size(253, 22);
+            this.ToolStripMenuItem_openHelp.Text = "Readmeを開く";
             this.ToolStripMenuItem_openHelp.Click += new System.EventHandler(this.ToolStripMenuItem_openHelp_Click);
             // 
             // panel_
@@ -129,12 +132,14 @@
             // 
             // comboBox_cdbsFileList
             // 
+            this.comboBox_cdbsFileList.BackColor = System.Drawing.SystemColors.Window;
             this.comboBox_cdbsFileList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_cdbsFileList.FormattingEnabled = true;
             this.comboBox_cdbsFileList.Location = new System.Drawing.Point(40, 76);
             this.comboBox_cdbsFileList.Name = "comboBox_cdbsFileList";
             this.comboBox_cdbsFileList.Size = new System.Drawing.Size(453, 20);
             this.comboBox_cdbsFileList.TabIndex = 5;
+            this.comboBox_cdbsFileList.SelectionChangeCommitted += new System.EventHandler(this.comboBox_cdbsFileList_SelectionChangeCommitted);
             // 
             // radioButton_connStr_output
             // 
@@ -174,6 +179,7 @@
             this.comboBox_connectStr.Name = "comboBox_connectStr";
             this.comboBox_connectStr.Size = new System.Drawing.Size(453, 20);
             this.comboBox_connectStr.TabIndex = 3;
+            this.comboBox_connectStr.TextChanged += new System.EventHandler(this.comboBox_connectStr_TextChanged);
             // 
             // panel2
             // 
@@ -232,6 +238,7 @@
             this.comboBox_sqlFileList.Name = "comboBox_sqlFileList";
             this.comboBox_sqlFileList.Size = new System.Drawing.Size(452, 20);
             this.comboBox_sqlFileList.TabIndex = 9;
+            this.comboBox_sqlFileList.SelectionChangeCommitted += new System.EventHandler(this.comboBox_sqlFileList_SelectionChangeCommitted);
             // 
             // radioButton_sql_out
             // 
@@ -251,6 +258,7 @@
             this.textBox_sql.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.textBox_sql.Size = new System.Drawing.Size(452, 173);
             this.textBox_sql.TabIndex = 7;
+            this.textBox_sql.TextChanged += new System.EventHandler(this.textBox_sql_TextChanged);
             this.textBox_sql.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_sql_KeyDown);
             // 
             // label4
@@ -331,11 +339,24 @@
             this.button_execute.UseVisualStyleBackColor = true;
             this.button_execute.Click += new System.EventHandler(this.button_execute_Click);
             // 
+            // ToolStripMenuItem_outFileReload
+            // 
+            this.ToolStripMenuItem_outFileReload.Name = "ToolStripMenuItem_outFileReload";
+            this.ToolStripMenuItem_outFileReload.Size = new System.Drawing.Size(253, 22);
+            this.ToolStripMenuItem_outFileReload.Text = "外部CDBS・SQLファイル再読み込み";
+            this.ToolStripMenuItem_outFileReload.Click += new System.EventHandler(this.ToolStripMenuItem_outFileReload_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(250, 6);
+            // 
             // Form_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(534, 711);
             this.Controls.Add(this.button_execute);
             this.Controls.Add(this.panel4);
@@ -393,6 +414,8 @@
         private System.Windows.Forms.TextBox textBox_excelFullPath;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button button_execute;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_outFileReload;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
     }
 }
 

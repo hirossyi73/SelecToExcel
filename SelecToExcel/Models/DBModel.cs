@@ -52,29 +52,31 @@ namespace SelecToExcel.Models
                 switch (this.DbType)
                 {
                     case Define.DatabaseType.SqlServer:
-                        cSqlConnection = new SqlConnection(this.ConnectionString);
+                        cSqlConnection = new SqlConnection();
                         hCommand = new SqlCommand();
                         adapter = new SqlDataAdapter();
                         break;
                     case Define.DatabaseType.Oracle:
-                        cSqlConnection = new OracleConnection(this.ConnectionString);
+                        cSqlConnection = new OracleConnection();
                         hCommand = new OracleCommand();
                         adapter = new OracleDataAdapter();
                         break;
                     case Define.DatabaseType.MySql:
-                        cSqlConnection = new MySqlConnection(this.ConnectionString);
+                        cSqlConnection = new MySqlConnection();
                         hCommand = new MySqlCommand();
                         adapter = new MySqlDataAdapter();
                         break;
                 }
                 try
                 {
-                    cSqlConnection.Open();
+                    cSqlConnection.ConnectionString = this.ConnectionString;
                 }
-                catch(Exception ex)
+                catch (ArgumentException argEx)
                 {
-                    throw STEException.ThrowException(Define.ErrorCode.DBConnectError, ex);
+                    throw new STEException(Define.ErrorCode.DBConnectError, argEx);
                 }
+
+                cSqlConnection.Open();
 
                 try
                 {
@@ -83,16 +85,23 @@ namespace SelecToExcel.Models
                     adapter.SelectCommand = hCommand;
                     adapter.Fill(dt);
                 }
+                catch (InvalidOperationException invEx)
+                {
+                    throw new STEException(Define.ErrorCode.DBExecuteError, invEx);
+                }
                 catch (Exception ex)
                 {
-                    throw STEException.ThrowException(Define.ErrorCode.DBExecuteError, ex);
-
+                    throw new STEException(Define.ErrorCode.DBUnExpectedError, ex);
                 }
                 return dt;
             }
+            catch (STEException steEx)
+            {
+                throw steEx;
+            }
             catch (Exception ex)
             {
-                throw STEException.ThrowException(Define.ErrorCode.DBUnExpectedError, ex);
+                throw ex;
             }
             finally
             {

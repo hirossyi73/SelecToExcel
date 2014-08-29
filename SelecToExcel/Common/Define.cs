@@ -52,6 +52,17 @@ namespace SelecToExcel.Common
         }
 
         /// <summary>
+        /// ReadMeパス
+        /// </summary>
+        public static string ReadmeFullPath
+        {
+            get
+            {
+                return Path.Combine(ToolDirFullPath, "Readme.txt");
+            }
+        }
+
+        /// <summary>
         /// ユーザーがあらかじめ用意しておいたSQLを保存する場所
         /// </summary>
         public static string UserOutSqlDirFullPath
@@ -87,6 +98,16 @@ namespace SelecToExcel.Common
             /// 指定した拡張子でない
             /// </summary>
             ExtentionError = 101
+            ,
+            /// <summary>
+            /// 接続文字列ファイルを選択していない
+            /// </summary>
+            CdbsSelectError = 102
+            ,
+            /// <summary>
+            /// SQLファイルを選択していない
+            /// </summary>
+            SqlSelectError = 103
             ,
             /// <summary>
             /// 必須項目不足
@@ -162,6 +183,10 @@ namespace SelecToExcel.Common
                     return "正常に終了しました。";
                 case ErrorCode.ExtentionError:
                     return "指定の拡張子は対応しておりません。";
+                case ErrorCode.CdbsSelectError:
+                    return "接続する接続文字列ファイルを選択してください。";
+                case ErrorCode.SqlSelectError:
+                    return "実行するSQLファイルを選択してください。";
                 case ErrorCode.DBConnectError:
                     return "データベースへの接続に失敗しました。\r\nデータベースの状態、接続文字列を確認してください。";
                 case ErrorCode.DBExecuteError:

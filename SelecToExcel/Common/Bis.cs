@@ -22,6 +22,7 @@ namespace SelecToExcel.Common
         public static Define.ErrorCode ExecuteDbToFile(Define.DatabaseType _dbType, string _connectString, string _sql, string _outFileFullPath)
         {
             Define.OutFileType outType = Define.OutFileType.Excel;
+            DataTable dt = null;
             // Excel出力用のフォルダ作成
             if (!Directory.Exists(Path.GetDirectoryName(_outFileFullPath)))
             {
@@ -30,7 +31,19 @@ namespace SelecToExcel.Common
 
             ///// DBよりデータ取得
             DBModel dbModel = new DBModel(_dbType, _connectString);
-            DataTable dt = dbModel.GetDBTable(_sql);
+            try
+            {
+                dt = dbModel.GetDBTable(_sql);
+            }
+            catch (STEException steEx)
+            {
+                return steEx.ErrorCode;
+            }
+            catch (Exception)
+            {
+                return Define.ErrorCode.DBUnExpectedError;
+            }
+
             DateTime executeDate = DateTime.UtcNow.AddHours(9);
 
             // 1件も一致しなかった場合は終了

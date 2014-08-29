@@ -59,7 +59,7 @@ namespace SelecToExcel.Models
                 }
                 catch(Exception ex)
                 {
-                    throw STEException.ThrowException(Common.Define.ErrorCode.ExcelOutputDataError, ex);
+                    throw STEException.ThrowException(Common.Define.ErrorCode.ExcelOutputDataError, _innerEx:ex);
                 }
 
                 //// Excel保存
@@ -69,14 +69,14 @@ namespace SelecToExcel.Models
                 }
                 catch (Exception ex)
                 {
-                    throw STEException.ThrowException(Common.Define.ErrorCode.ExcelSaveError, ex);
+                    throw STEException.ThrowException(Common.Define.ErrorCode.ExcelSaveError, _innerEx:ex);
                 }
 
                 return true;
             }
             catch(Exception ex)
             {
-                throw STEException.ThrowException(Common.Define.ErrorCode.ExcelUnExpectedError, ex);
+                throw STEException.ThrowException(Common.Define.ErrorCode.ExcelUnExpectedError, _innerEx:ex);
             }
         }
         #endregion

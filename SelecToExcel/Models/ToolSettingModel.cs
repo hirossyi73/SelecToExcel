@@ -20,6 +20,8 @@ namespace SelecToExcel.Models
             this.DbType = (Define.DatabaseType)0;
             this.SqlType = Define.ExecuteSqlType.Input;
             this.IsOpenExcel = false;
+            this.SelectCdbsString = string.Empty;
+            this.SelectSqlString = string.Empty;
         }
         #endregion
 
@@ -106,6 +108,16 @@ namespace SelecToExcel.Models
                 { }
             }
         }
+
+        /// <summary>
+        /// 選択した接続文字列ファイル名
+        /// </summary>
+        public string SelectCdbsString { get; set; }
+
+        /// <summary>
+        /// 選択したSQLファイル名
+        /// </summary>
+        public string SelectSqlString { get; set; }
         #endregion
 
         #region メソッド

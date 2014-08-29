@@ -30,7 +30,7 @@ namespace SelecToExcel
         /// </summary>
         private void Initialize()
         {
-            app = new ToolSettingModel();
+            app = ToolSettingModel.Load();
             foreach (Define.DatabaseType item in Enum.GetValues(typeof(Define.DatabaseType)))
             {
                 this.comboBox_dbType.Items.Add(Define.GetDbTypeString(item));
@@ -55,11 +55,20 @@ namespace SelecToExcel
             foreach (var item in Bis.GetFileList(Define.UserOutSqlDirFullPath, "*.sql"))
             {
                 this.comboBox_sqlFileList.Items.Add(Path.GetFileName(item));
+                if (app.SelectSqlString == item)
+                {
+                    this.comboBox_sqlFileList.SelectedItem = item;
+                }
             }
+
             // 外部cdbsファイル読み込み
             foreach (var item in Bis.GetFileList(Define.UserOutCdbsDirFullPath, "*.cdbs"))
             {
                 this.comboBox_cdbsFileList.Items.Add(Path.GetFileName(item));
+                if (app.SelectCdbsString == item)
+                {
+                    this.comboBox_cdbsFileList.SelectedItem = item;
+                }
             }
         }
 
@@ -88,7 +97,7 @@ namespace SelecToExcel
                     // 選択されてなければ終了
                     if (this.comboBox_sqlFileList.SelectedIndex == -1)
                     {
-                        windowEnabled("実行するSQLを選択してください");
+                        windowEnabled(Define.ErrorCode.SqlSelectError);
                         return;
                     }
                     sql = Bis.GetFileText(Path.Combine(Define.UserOutSqlDirFullPath, this.comboBox_sqlFileList.Text));
@@ -105,11 +114,10 @@ namespace SelecToExcel
                     // 選択されてなければ終了
                     if (this.comboBox_cdbsFileList.SelectedIndex == -1)
                     {
-                        windowEnabled("接続文字列を選択してください");
+                        windowEnabled(Define.ErrorCode.CdbsSelectError);
                         return;
                     }
                     connectionString = Bis.GetFileText(Path.Combine(Define.UserOutCdbsDirFullPath, this.comboBox_cdbsFileList.Text));
-
                 }
 
                 // Excel出力用のフォルダ作成
@@ -120,37 +128,23 @@ namespace SelecToExcel
 
                 ///// DBよりデータ出力
                 Define.ErrorCode errorCode = Define.ErrorCode.Success;
-                try
+                errorCode = Bis.ExecuteDbToFile(app.DbType, connectionString, sql, this.textBox_excelFullPath.Text);
+                // 出力成功時
+                if (errorCode == Define.ErrorCode.Success)
                 {
-                    errorCode = Bis.ExecuteDbToFile(app.DbType, connectionString, sql, this.textBox_excelFullPath.Text);
-                    // 出力成功時
-                    if (errorCode == Define.ErrorCode.Success)
+                    if (this.checkBox_isOpenExcel.Checked)
                     {
-                        if (this.checkBox_isOpenExcel.Checked)
-                        {
-                            System.Diagnostics.Process.Start(this.textBox_excelFullPath.Text);
-                        }
-                        else
-                        {
-                            windowEnabled(Define.ErrorMessage(errorCode));
-                        }
+                        System.Diagnostics.Process.Start(this.textBox_excelFullPath.Text);
+                    }
+                    else
+                    {
+                        windowEnabled(errorCode);
                     }
                 }
-                catch (STEException ex)
+                else
                 {
-                    windowEnabled(ex.ErrorMassage + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                    return;
+                    windowEnabled(errorCode);
                 }
-                catch (Exception ex)
-                {
-                    windowEnabled(ex.Message + "\r\n" + ex.StackTrace);
-                    return;
-                }
-            }
-            catch (STEException ex)
-            {
-                windowEnabled(ex.ErrorMassage + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                return;
             }
             catch (Exception ex)
             {
@@ -165,6 +159,15 @@ namespace SelecToExcel
         private void toggleForm(bool _enabled)
         {
             this.Enabled = _enabled;
+        }
+
+        /// <summary>
+        /// Windowを実行状態にする　メッセージがあれば表示
+        /// </summary>
+        /// <param name="_message"></param>
+        private void windowEnabled(Define.ErrorCode _errorCode)
+        {
+            windowEnabled(Define.ErrorMessage(_errorCode));
         }
 
         /// <summary>
@@ -328,13 +331,42 @@ namespace SelecToExcel
         {
             try
             {
-                Process.Start(Define.MYPAGE_HELP_URL);
+                // Process.Start(Define.MYPAGE_HELP_URL);
+                Process.Start(Define.ReadmeFullPath);
             }
             catch
             {
-                windowEnabled("ヘルプを開くことができませんでした。以下のURLを入力してください。\r\n"
-                    + Define.MYPAGE_HELP_URL);
+                //windowEnabled("ヘルプを開くことができませんでした。以下のURLを入力してください。\r\n"
+                //    + Define.MYPAGE_HELP_URL);
+                windowEnabled("ヘルプを開くことができませんでした。以下のファイルを開いてください。\r\n"
+                    + Define.ReadmeFullPath);
             }
         }
+
+        private void comboBox_connectStr_TextChanged(object sender, EventArgs e)
+        {
+            this.radioButton_connStr_input.Checked = true;
+        }
+
+        private void comboBox_cdbsFileList_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            this.radioButton_connStr_output.Checked = true;
+        }
+
+        private void comboBox_sqlFileList_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            this.radioButton_sql_out.Checked = true;
+        }
+
+        private void textBox_sql_TextChanged(object sender, EventArgs e)
+        {
+            this.radioButton_sql_input.Checked = true;
+        }
+
+        private void ToolStripMenuItem_outFileReload_Click(object sender, EventArgs e)
+        {
+            Initialize();
+        }
+
     }
 }

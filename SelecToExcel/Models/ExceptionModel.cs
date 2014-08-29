@@ -11,17 +11,27 @@ namespace SelecToExcel.Models
     {
         #region コンストラクタ
         public STEException()
-            : this(Define.ErrorCode.UnExpectedError, new Exception())
+            : this(Define.ErrorCode.UnExpectedError, null, new Exception())
+        {
+        }
+
+        public STEException(string _message, Exception _ex)
+            : this(Define.ErrorCode.UnExpectedError, _message, new Exception())
         {
         }
 
         public STEException(Define.ErrorCode _errorCode, Exception _ex)
+            : this(_errorCode, null, new Exception())
+        {
+        }
+
+        public STEException(Define.ErrorCode _errorCode, string _message, Exception _innerEx)
+            : base(_message, _innerEx)
         {
             this.ErrorCode = _errorCode;
-            this.Ex = _ex;
         }
-        #endregion 
-        
+        #endregion
+
         #region プロパティ
         /// <summary>
         /// エラーコード
@@ -53,19 +63,17 @@ namespace SelecToExcel.Models
                 return Define.ErrorMessage(this.ErrorCode);
             }
         }
-
-        public Exception Ex { get; set; }
         #endregion
 
         /// <summary>
         /// ThrowするExceptionを作成
         /// </summary>
         /// <param name="_errorCode"></param>
-        /// <param name="_ex"></param>
+        /// <param name="_innerEx"></param>
         /// <returns></returns>
-        public static STEException ThrowException(Define.ErrorCode _errorCode, Exception _ex)
+        public static STEException ThrowException(Define.ErrorCode _errorCode, string _message = null, Exception _innerEx = null)
         {
-            STEException steex = new STEException(_errorCode, _ex);
+            STEException steex = new STEException(_errorCode, _message, _innerEx);
             return steex;
         }
     }

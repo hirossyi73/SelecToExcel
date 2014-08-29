@@ -27,7 +27,7 @@ namespace SelecToExcel
                 string sql = Bis.GetFileText(model.SqlFullPath);
                 string connstr = Bis.GetFileText(model.ConnectionString);
 
-                ///// Excel作成
+                ///// Excel・CSV作成
                 try
                 {
                     Define.ErrorCode errorCode = Bis.ExecuteDbToFile((Define.DatabaseType)model.DbType, connstr, sql, model.OutFileFullPath);
