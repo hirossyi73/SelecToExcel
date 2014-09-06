@@ -22,7 +22,6 @@ namespace SelecToExcel
         {
             InitializeComponent();
             Initialize();
-            appConfigRoad();
         }
 
         /// <summary>
@@ -31,6 +30,40 @@ namespace SelecToExcel
         private void Initialize()
         {
             app = ToolSettingModel.Load();
+
+            // 初期化
+            this.comboBox_dbType.Items.Clear();
+            this.comboBox_connectStr.Items.Clear();
+            this.comboBox_connectStr.Text = string.Empty;
+
+            this.textBox_excelFullPath.Text = app.ExcelFullPath;
+            this.textBox_sql.Text = app.SqlString.Replace("\n", "\r\n").Replace("\r\r", "\r");
+            this.checkBox_isOpenExcel.Checked = app.IsOpenExcel;
+
+            if (app.SqlType == Define.ExecuteSqlType.Input)
+            {
+                this.radioButton_sql_input.Checked = true;
+            }
+            else
+            {
+                this.radioButton_sql_out.Checked = true;
+            }
+
+            if (app.ConnectionType == Define.ExecuteConnType.Input)
+            {
+                this.radioButton_connStr_input.Checked = true;
+            }
+            else
+            {
+                this.radioButton_connStr_output.Checked = true;
+            }
+
+            this.comboBox_connectStr.Items.AddRange(app.ConnectionStringHistory.ToArray());
+            if (this.comboBox_connectStr.Items.Count > 0)
+            {
+                this.comboBox_connectStr.SelectedIndex = 0;
+            }
+
             foreach (Define.DatabaseType item in Enum.GetValues(typeof(Define.DatabaseType)))
             {
                 this.comboBox_dbType.Items.Add(Define.GetDbTypeString(item));
@@ -90,6 +123,12 @@ namespace SelecToExcel
                 string sql = string.Empty;
                 if (this.radioButton_sql_input.Checked)
                 {
+                    // 入力されてなければ終了
+                    if (string.IsNullOrEmpty(this.textBox_sql.Text))
+                    {
+                        windowEnabled(Define.ErrorCode.SqlInputEmptyError);
+                        return;
+                    }
                     sql = this.textBox_sql.Text;
                 }
                 else
@@ -107,6 +146,12 @@ namespace SelecToExcel
                 string connectionString = string.Empty;
                 if (this.radioButton_connStr_input.Checked)
                 {
+                    // 入力されてなければ終了
+                    if (string.IsNullOrEmpty(this.comboBox_connectStr.Text))
+                    {
+                        windowEnabled(Define.ErrorCode.CdbsInputEmptyError);
+                        return;
+                    }
                     connectionString = this.comboBox_connectStr.Text;
                 }
                 else
@@ -198,56 +243,24 @@ namespace SelecToExcel
             app.IsOpenExcel = this.checkBox_isOpenExcel.Checked;
 
             #region 接続文字列履歴
-            // 履歴内に同じものが含んでいれば、削除する（先頭に持ってくるため）
-            if (app.ConnectionStringHistory.Contains(this.comboBox_connectStr.Text))
+            if (!string.IsNullOrEmpty(this.comboBox_connectStr.Text))
             {
-                app.ConnectionStringHistory.Remove(this.comboBox_connectStr.Text);
+                // 履歴内に同じものが含んでいれば、削除する（先頭に持ってくるため）
+                if (app.ConnectionStringHistory.Contains(this.comboBox_connectStr.Text))
+                {
+                    app.ConnectionStringHistory.Remove(this.comboBox_connectStr.Text);
+                }
+                // 接続文字列履歴が10件あれば、最後のものを削除する
+                else if (app.ConnectionStringHistory.Count >= HISTORY_MAX)
+                {
+                    app.ConnectionStringHistory.RemoveRange(HISTORY_MAX - 1, (app.ConnectionStringHistory.Count - HISTORY_MAX + 1));
+                }
+                // 接続文字列を一番上にする
+                app.ConnectionStringHistory.Insert(0, this.comboBox_connectStr.Text);
             }
-            // 接続文字列履歴が10件あれば、最後のものを削除する
-            else if (app.ConnectionStringHistory.Count >= HISTORY_MAX)
-            {
-                app.ConnectionStringHistory.RemoveRange(HISTORY_MAX - 1, (app.ConnectionStringHistory.Count - HISTORY_MAX + 1));
-            }
-            // 接続文字列を一番上にする
-            app.ConnectionStringHistory.Insert(0, this.comboBox_connectStr.Text);
             #endregion
 
             app.Save();
-        }
-
-        /// <summary>
-        /// app.configから設定値読み込み
-        /// </summary>
-        private void appConfigRoad()
-        {
-            app = ToolSettingModel.Load();
-            this.textBox_excelFullPath.Text = app.ExcelFullPath;
-            this.textBox_sql.Text = app.SqlString.Replace("\n", "\r\n").Replace("\r\r", "\r");
-            this.checkBox_isOpenExcel.Checked = app.IsOpenExcel;
-
-            if (app.SqlType == Define.ExecuteSqlType.Input)
-            {
-                this.radioButton_sql_input.Checked = true;
-            }
-            else
-            {
-                this.radioButton_sql_out.Checked = true;
-            }
-
-            if (app.ConnectionType == Define.ExecuteConnType.Input)
-            {
-                this.radioButton_connStr_input.Checked = true;
-            }
-            else
-            {
-                this.radioButton_connStr_output.Checked = true;
-            }
-
-            this.comboBox_connectStr.Items.AddRange(app.ConnectionStringHistory.ToArray());
-            if (this.comboBox_connectStr.Items.Count > 0)
-            {
-                this.comboBox_connectStr.SelectedIndex = 0;
-            }
         }
 
         private void button_excelSansyo_Click(object sender, EventArgs e)
@@ -365,6 +378,12 @@ namespace SelecToExcel
 
         private void ToolStripMenuItem_outFileReload_Click(object sender, EventArgs e)
         {
+            Initialize();
+        }
+
+        private void ToolStripMenuItem_rirekiReset_Click(object sender, EventArgs e)
+        {
+            ToolSettingModel.Reset();
             Initialize();
         }
 

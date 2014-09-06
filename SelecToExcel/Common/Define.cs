@@ -110,6 +110,16 @@ namespace SelecToExcel.Common
             SqlSelectError = 103
             ,
             /// <summary>
+            /// 接続文字列ファイルを入力していない
+            /// </summary>
+            CdbsInputEmptyError = 104
+            ,
+            /// <summary>
+            /// SQLファイルを入力していない
+            /// </summary>
+            SqlInputEmptyError = 105
+            ,
+            /// <summary>
             /// 必須項目不足
             /// </summary>
             HissuFusokuError = 301
@@ -187,6 +197,10 @@ namespace SelecToExcel.Common
                     return "接続する接続文字列ファイルを選択してください。";
                 case ErrorCode.SqlSelectError:
                     return "実行するSQLファイルを選択してください。";
+                case ErrorCode.CdbsInputEmptyError:
+                    return "接続する接続文字列を入力してください。";
+                case ErrorCode.SqlInputEmptyError:
+                    return "実行するSQLを入力してください。";
                 case ErrorCode.DBConnectError:
                     return "データベースへの接続に失敗しました。\r\nデータベースの状態、接続文字列を確認してください。";
                 case ErrorCode.DBExecuteError:
@@ -213,6 +227,8 @@ namespace SelecToExcel.Common
             Oracle = 1
             ,
             MySql = 2
+            ,
+            Access = 3
         }
 
         public static string GetDbTypeString(DatabaseType _type)
@@ -225,6 +241,8 @@ namespace SelecToExcel.Common
                     return "Oracle Database";
                 case DatabaseType.MySql:
                     return "MySQL";
+                case DatabaseType.Access:
+                    return "Access";
             }
             return string.Empty;
         }

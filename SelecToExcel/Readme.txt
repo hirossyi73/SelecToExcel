@@ -81,7 +81,7 @@ copyright © 2014 hirossyi. All rights reserved.
 　
 　[引数について]
 　　実行には以下の引数が必要です。各引数はスペースで区切って下さい。
-　　■dbtype:=(必須。データベースの種類の整数。SQLServer=0、OracleDatabase=1、MySQL=2を指定する)
+　　■dbtype:=(必須。データベースの種類の整数。SQLServerの場合0、OracleDatabaseの場合1、MySQLの場合2、Accessの場合3を指定する)
 　　■conpath:=(必須。接続を行うデータベースの、接続文字列を入力したファイルのフルパス)
 　　■sqlpath:=(必須。実行するSQLファイルのフルパス)
 　　■outpath:=(必須。出力するExcel・CSVファイルのフルパス)
@@ -93,5 +93,6 @@ copyright © 2014 hirossyi. All rights reserved.
 　　
 　　
 【7. 更新履歴】
+　■2014/09/05　v0.3　DB種類に「Access」追加　「設定・履歴リセット」機能追加
 　■2014/08/27　v0.2　CSV出力対応
 　■2014/08/13　v0.1　α版リリース

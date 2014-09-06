@@ -55,7 +55,7 @@
       <HintPath>..\packages\ClosedXML.0.73.0\lib\net35-client\ClosedXML.dll</HintPath>
     </Reference>
     <Reference Include="CsvHelper">
-      <HintPath>..\packages\CsvHelper.2.7.0\lib\net35-client\CsvHelper.dll</HintPath>
+      <HintPath>..\packages\CsvHelper.2.7.1\lib\net35-client\CsvHelper.dll</HintPath>
     </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.0.5022.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>

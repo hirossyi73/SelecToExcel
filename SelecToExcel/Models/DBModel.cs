@@ -9,6 +9,7 @@ using System.Data;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Data.OracleClient;
+using System.Data.OleDb;
 
 using SelecToExcel.Common;
 
@@ -65,6 +66,11 @@ namespace SelecToExcel.Models
                         cSqlConnection = new MySqlConnection();
                         hCommand = new MySqlCommand();
                         adapter = new MySqlDataAdapter();
+                        break;
+                    case Define.DatabaseType.Access:
+                        cSqlConnection = new OleDbConnection();
+                        hCommand = new OleDbCommand();
+                        adapter = new OleDbDataAdapter();
                         break;
                 }
                 try

@@ -157,7 +157,25 @@ namespace SelecToExcel.Models
         {
             try
             {
-                if(!Directory.Exists(Path.GetDirectoryName(Define.AppSettingDataFullPath))){
+                return Save(this);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// ほぞん
+        /// </summary>
+        /// <param name="_model"></param>
+        /// <returns></returns>
+        public static bool Save(ToolSettingModel _toolModel)
+        {
+            try
+            {
+                if (!Directory.Exists(Path.GetDirectoryName(Define.AppSettingDataFullPath)))
+                {
                     Directory.CreateDirectory(Path.GetDirectoryName(Define.AppSettingDataFullPath));
                 }
                 //XmlSerializerオブジェクトを作成
@@ -167,10 +185,26 @@ namespace SelecToExcel.Models
                 using (StreamWriter sw = new StreamWriter(Define.AppSettingDataFullPath, false, new System.Text.UTF8Encoding(false)))
                 {
                     //シリアル化し、XMLファイルに保存する
-                    serializer.Serialize(sw, this);
+                    serializer.Serialize(sw, _toolModel);
                 }
 
                 return true;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// しょきか
+        /// </summary>
+        /// <returns></returns>
+        public static bool Reset()
+        {
+            try
+            {
+                return Save(new ToolSettingModel());
             }
             catch
             {
